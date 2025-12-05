@@ -1,23 +1,19 @@
 {
-  "name": "cedtinternscraper",
+  "name": "cedtinternwebscraping",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {},
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/BANKeng7460/CEDTInternScraper.git"
-  },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/BANKeng7460/CEDTInternScraper/issues"
-  },
-  "homepage": "https://github.com/BANKeng7460/CEDTInternScraper#readme",
   "devDependencies": {
     "@playwright/test": "^1.57.0",
     "@types/node": "^24.10.1"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "playwright": "^1.57.0"
   }
 }
