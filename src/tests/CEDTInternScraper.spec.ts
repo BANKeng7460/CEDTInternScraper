@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { escapeCsvValue }from '../functions/escapeCsvValue';
 import * as fs from 'fs';
 
 test('CEDTInternScraper', async ({ page }) => {
@@ -30,26 +31,25 @@ test('CEDTInternScraper', async ({ page }) => {
     const locatorCell = page.locator('.flex.flex-col.w-full.h-fit.rounded-md').nth(cell)
     const jobName = await locatorCell.locator('a').first().textContent()
     const companyName = await locatorCell.locator('a').nth(1).textContent()
+    const seatsText = await locatorCell.locator('p', { hasText: 'ที่นั่ง' }).textContent();
+    const seats = seatsText?.match(/\d+/)?.[0] ?? null;
+    const locator = locatorCell.locator('p', { hasText: 'คนเลือกตำแหน่งนี้' });
+const count = await locator.count();
+
+let selections = 0;  // default 0
+if (count > 0) {
+  const text = await locator.textContent();
+  selections = Number(text?.match(/\d+/)?.[0] ?? 0);
+}
+
     await locatorCell.getByRole('button', { name: 'ดูเพิ่มเติม' }).click()
     const Compensation = await page.locator('.body1.font-normal.w-\\[70\\%\\].text-high.max-lg\\:w-full').first().textContent()
-    console.log(jobName,companyName,Compensation)
-    results.push({ "jobPosition":jobName ,"CompanyName":companyName,"Compensation":Compensation});
+    const Address = await page.locator('.body1.font-normal.w-\\[70\\%\\].text-high.max-lg\\:w-full').nth(3).textContent()
+    console.log(jobName,companyName,seats,"ที่นั่ง",selections,"คนเลือกตำแหน่งนี้",Compensation,Address)
+    results.push({ "jobPosition":jobName ,"CompanyName":companyName,seats,selections,"Compensation":Compensation,Address});
   }
 
-  function escapeCsvValue(value: string | null): string {
-  if (value === null) {
-    return '';
-  }
-  if (typeof value === 'string') {
-    // escape " เป็น ""
-    value = value.replace(/"/g, '""');
-    // ถ้ามี , หรือ " หรือ \n ให้ครอบด้วย "
-    if (value.search(/("|,|\n)/g) >= 0) {
-      value = `"${value}"`;
-    }
-  }
-  return value;
-}
+  
 
 // สร้าง header
 const header = Object.keys(results[0]).join(',') + '\n';
@@ -64,7 +64,7 @@ const csvData = header + rows;
 
 
 // เขียนไฟล์ CSV
-  fs.writeFileSync('CEDTCompensationList.csv', csvData);
+  fs.writeFileSync('CEDTInternList.csv', csvData);
 
-  console.log('saved → CEDTCompensationList.csv');
+  console.log('saved → CEDTInternList.csv');
 });
