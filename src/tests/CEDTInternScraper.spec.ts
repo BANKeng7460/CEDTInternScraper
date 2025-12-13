@@ -1,19 +1,15 @@
-import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
 import { escapeCsvValue }from '../functions/escapeCsvValue';
 import * as fs from 'fs';
+import { test } from '../pages/base';
 
-test('CEDTInternScraper', async ({ page }) => {
+test('CEDTInternScraper', async ({ page,loginPage }) => {
   const usernameID = process.env.USERNAMEID!
   const password = process.env.PASSWORD!
   const results = []
-  //Setup Zone
-  await page.goto('https://cedtintern.cp.eng.chula.ac.th/');
-  await page.getByRole('button', { name: 'เข้าสู่ระบบด้วยบัญชี' }).click();
-  await page.locator('#cv-login-main').click();
-  await page.getByRole('link').filter({ hasText: /^$/ }).click();
-  await page.getByRole('textbox', { name: 'ชื่อบัญชี (Username)' }).fill(usernameID)
-  await page.getByRole('textbox', { name: 'รหัสผ่าน' }).fill(password)
-  await page.getByRole('button', { name: 'เข้าสู่ระบบ' }).click();
+  
+  await loginPage.Login(usernameID,password)
+  
   await page.getByRole('link', { name: 'ตำแหน่งฝึกงาน', exact:true }).click();
   const locatorPosCount = page.locator('p', { hasText: "ผลลัพธ์การค้นหา" })
                    .locator('span.font-bold')
